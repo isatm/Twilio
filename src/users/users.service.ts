@@ -5,9 +5,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User as SchemaUser, UserDocument } from './schema/user.schema';
-import { ChangePasswordDto, CreateUserDto, LoginDto, RefreshTokenDto, UpdateUserDto, VerifyEmailDto } from './dto/user.dto';
+import { ChangePasswordDto, CreateUserDto, LoginDto, RefreshTokenDto, UpdateUserDto, VerifyEmailDto, VerifyUserDto } from './dto/user.dto';
 import { EmailService } from '../email/email.service';
 import { User, UserServiceInterface } from './interfaces/user.interface';
+import { SmsService } from 'src/sms/sms.service';
 
 @Injectable()
 export class UsersService implements UserServiceInterface {
@@ -16,6 +17,7 @@ export class UsersService implements UserServiceInterface {
     private jwtService: JwtService,
     private configService: ConfigService,
     private emailService: EmailService,
+    private smsService: SmsService
   ) {}
 
   private toUserInterface(userDoc: UserDocument): User {
@@ -26,6 +28,7 @@ export class UsersService implements UserServiceInterface {
     return userObj as User;
   }
 
+  // + Codigo cambiado
   async create(createUserDto: CreateUserDto): Promise<User> {
     // Check if user already exists
     const existingUser = await this.userModel.findOne({ email: createUserDto.email }).exec();
@@ -91,7 +94,7 @@ export class UsersService implements UserServiceInterface {
     return { message: 'Email verified successfully' };
   }
 
-  async login(loginDto: LoginDto): Promise<{ accessToken: string; refreshToken: string; user: User }> {
+  async login(loginDto: LoginDto): Promise<User> {
     const user = await this.userModel.findOne({ email: loginDto.email }).exec();
     
     if (!user) {
@@ -109,6 +112,41 @@ export class UsersService implements UserServiceInterface {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // Create Code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString(); 
+    const verificationCodeExpires = new Date();
+    verificationCodeExpires.setMinutes(verificationCodeExpires.getMinutes() + 2); 
+
+    //  Send Code
+    await this.smsService.sendVerificationSms(
+      user.phone,
+      verificationCode
+    );
+
+    user.verificationCode = verificationCode;
+    user.verificationCodeExpires = verificationCodeExpires;
+
+    const updatedUser = await user.save();
+
+    return this.toUserInterface(updatedUser);
+  }
+
+  async verifyUser(id: string, verifyUserDto: VerifyUserDto): Promise<{ accessToken: string; refreshToken: string; user: User }> {
+    const { code } = verifyUserDto;
+    const user = await this.userModel.findById(id).exec();
+    if (!user) {
+      throw new NotFoundException(`User with ID "${id}" not found`);
+    }
+    if (user.verificationCode !== code) {
+      throw new BadRequestException('Invalid verification code');
+    }
+    if (user.verificationCodeExpires && new Date() > user.verificationCodeExpires) {
+      throw new BadRequestException('Verification code expired');
+    }
+    user.isVerified = true;
+    user.verificationCode = undefined;
+    user.verificationCodeExpires = undefined;
+
     // Generate tokens
     // Access the _id as a property of the document
     const tokens = await this.getTokens(user.id, user.email, user.role);
@@ -116,13 +154,15 @@ export class UsersService implements UserServiceInterface {
     // Update refresh token in database
     const hashedRefreshToken = await bcrypt.hash(tokens.refreshToken, 10);
     user.refreshToken = hashedRefreshToken;
-    await user.save();
-
+    
+    const updatedUser = await user.save();
+    
     return {
       ...tokens,
-      user: this.toUserInterface(user),
+      user: this.toUserInterface(updatedUser),
     };
   }
+  //------------------------------------------------------------------------------------------------- +
 
   // Implementing the missing methods
   async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
@@ -218,19 +258,6 @@ export class UsersService implements UserServiceInterface {
     if (result.deletedCount === 0) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
-  }
-
-  async verifyUser(id: string): Promise<User> {
-    const user = await this.userModel.findById(id).exec();
-    if (!user) {
-      throw new NotFoundException(`User with ID "${id}" not found`);
-    }
-    
-    user.isVerified = true;
-    user.verificationCode = undefined;
-    user.verificationCodeExpires = undefined;
-    const updatedUser = await user.save();
-    return this.toUserInterface(updatedUser);
   }
 
   async changePassword(id: string, changePasswordDto: ChangePasswordDto): Promise<void> {

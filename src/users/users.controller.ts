@@ -17,13 +17,16 @@ import {
     LoginDto, 
     RefreshTokenDto, 
     ChangePasswordDto, 
-    VerifyEmailDto 
+    VerifyEmailDto, 
+    VerifyUserDto
   } from './dto/user.dto';
   import { JwtAuthGuard } from './guards/jwt-auth.guard';
   
   @Controller('users')
   export class UsersController {
     constructor(private readonly usersService: UsersService) {}
+
+    // + Codigo cambiado
   
     @Post('signup')
     async create(@Body() createUserDto: CreateUserDto) {
@@ -36,12 +39,19 @@ import {
       return this.usersService.verifyEmail(verifyEmailDto);
     }
   
-    @HttpCode(HttpStatus.OK)
     @Post('login')
-    login(@Body() loginDto: LoginDto) {
-      return this.usersService.login(loginDto);
+    async login(@Body() loginDto: LoginDto) {
+      await this.usersService.login(loginDto);
+      return { message: 'Please check your sms for verification code.' };
     }
-  
+
+    @Post(':id/singin/verify-code')
+    verifyPhone(@Param('id') id: string, @Body() verifyUserDto: VerifyUserDto){
+      return this.usersService.verifyUser(id, verifyUserDto);
+    }
+
+    //------------------------------------------------------------------------------------------------- +
+
     @HttpCode(HttpStatus.OK)
     @Post('refresh-token')
     refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {

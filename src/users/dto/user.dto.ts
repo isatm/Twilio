@@ -4,6 +4,7 @@ import {
     IsString,
     MinLength,
     IsOptional,
+    IsPhoneNumber,
   } from 'class-validator';
   
   export class CreateUserDto {
@@ -14,6 +15,10 @@ import {
     @IsNotEmpty()
     @IsEmail()
     email: string;
+
+    @IsNotEmpty()
+    @IsPhoneNumber()
+    phone: string;
   
     @IsNotEmpty()
     @IsString()
@@ -72,3 +77,11 @@ import {
     @IsString()
     code: string;
   }
+
+  // + Codigo cambiado 
+  export class VerifyUserDto {
+    @IsNotEmpty()
+    @IsString()
+    code: string;
+  }
+  // ----------------------- +

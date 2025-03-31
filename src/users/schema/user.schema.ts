@@ -11,6 +11,11 @@ export class User {
   @Prop({ required: true, unique: true })
   email: string;
 
+  // + Codigo cambiado
+  @Prop({ required: true })
+  phone: string;
+  // ---------------- +
+
   @Prop({ required: true })
   password: string;
 
