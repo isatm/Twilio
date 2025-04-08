@@ -28,6 +28,10 @@ export class UpdateCategoryDto{
     @IsString()
     name?: string;
   
+    @IsNotEmpty()
+    @IsString()
+    description?: string;
+    
     @IsOptional()
     @IsString()
     image?: string;

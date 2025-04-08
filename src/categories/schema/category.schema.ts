@@ -21,4 +21,4 @@ export class Category{
     createdBy: string;
 }
 
-export const ProductSchema = SchemaFactory.createForClass(Category);
+export const CategorySchema = SchemaFactory.createForClass(Category);
