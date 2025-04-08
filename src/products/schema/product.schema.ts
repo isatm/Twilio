@@ -1,5 +1,6 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document, Schema as mongooseSchema} from 'mongoose';
+import { Category } from 'src/categories/schema/category.schema';
 
 export type ProductDocument = Product & Document;
 
@@ -20,8 +21,12 @@ export class Product{
     @Prop({required:true})
     role: string;
 
+    @Prop({type: mongooseSchema.Types.ObjectId, ref: Category.name, required: true })
+    category: string;
+
     @Prop({type: mongooseSchema.Types.ObjectId, ref:'User'})
     createdBy: string;
+
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

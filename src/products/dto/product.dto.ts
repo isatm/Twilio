@@ -4,6 +4,7 @@ import {
   IsString,
   IsOptional,
   IsBoolean,
+  IsMongoId,
 } from 'class-validator';
 
 export class CreateProductDto {
@@ -22,6 +23,10 @@ export class CreateProductDto {
   @IsNotEmpty()
   @IsNumber()
   price: number;
+
+  @IsNotEmpty()
+  @IsString()
+  category: string;
 
   @IsOptional()
   @IsBoolean()
@@ -48,4 +53,8 @@ export class UpdateProductDto{
     @IsOptional()
     @IsString()
     role?: string;
+
+    @IsNotEmpty()
+    @IsString()
+    category?: string;
 }
