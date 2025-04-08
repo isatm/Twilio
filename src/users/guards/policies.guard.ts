@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AbilityFactory } from '../../abilities/ability.factory';
-import { CHECK_POLICIES_KEY, PolicyHandler } from 'src/products/decorators/check-policies.decorator';
-import { IS_PUBLIC_KEY } from 'src/products/decorators/public.decorator';
+import { CHECK_POLICIES_KEY, PolicyHandler } from 'src/users/decorators/check-policies.decorator';
+import { IS_PUBLIC_KEY } from 'src/users/decorators/public.decorator';
 import { from } from 'rxjs';
 
 @Injectable()

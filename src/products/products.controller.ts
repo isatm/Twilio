@@ -13,8 +13,8 @@ import {
   import { ProductsService } from './products.service';
   import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
   import { RolesGuard } from '../users/guards/roles.guard';
-  import { Roles } from './decorators/roles.decorator';
-  import { Public } from './decorators/public.decorator';
+  import { Roles } from '../users/decorators/roles.decorator';
+  import { Public } from '../users/decorators/public.decorator';
   
   @Controller('products')
   export class ProductsController {

@@ -21,7 +21,7 @@ import {
     VerifySmsDto,
   } from './dto/user.dto';
   import { JwtAuthGuard } from './guards/jwt-auth.guard';
-  import { Public } from 'src/products/decorators/public.decorator';
+  import { Public } from 'src/users/decorators/public.decorator';
   @Controller('users')
   export class UsersController {
     constructor(private readonly usersService: UsersService) {}
