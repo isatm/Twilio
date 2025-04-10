@@ -17,20 +17,16 @@ export class CreateProductDto {
   description: string;
 
   @IsNotEmpty()
-  @IsString()
-  role: string;
-
-  @IsNotEmpty()
   @IsNumber()
   price: number;
-
-  @IsNotEmpty()
-  @IsString()
-  category: string;
 
   @IsOptional()
   @IsBoolean()
   isActive: boolean;
+
+  @IsNotEmpty()
+  @IsString()
+  category: string;  
 }
 
 export class UpdateProductDto{

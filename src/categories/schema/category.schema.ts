@@ -12,13 +12,10 @@ export class Category{
     description: string;
 
     @Prop({required:true})
-    isArchive: string;
+    isActive: boolean;
 
     @Prop({required:true})
     image: string;
-
-    @Prop({type: mongooseSchema.Types.ObjectId, ref:'User'})
-    createdBy: string;
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

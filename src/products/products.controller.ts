@@ -34,9 +34,10 @@ import {
     }
   
     // Ruta protegida por defecto
+    @Public()
     @Post()
-    create(@Body() createProductDto: CreateProductDto, @Request() req) {
-      return this.productsService.create(createProductDto, req.user.id);
+    create(@Body() createProductDto: CreateProductDto) {
+      return this.productsService.create(createProductDto);
     }
   
     @Put(':id')
@@ -46,15 +47,16 @@ import {
       @Request() req,
     ) {
       const product = await this.productsService.findById(id);
+      /*
       if (product.createdBy && product.createdBy.toString() !== req.user.id) {
         throw new UnauthorizedException('You can only update your own products');
-      }
+      }*/
       return this.productsService.update(id, updateProductDto);
     }
   
     @Delete(':id')
     async delete(@Param('id') id: string, @Request() req) {
-      const product = await this.productsService.findById(id);
+      const product = await this.productsService.findById(id);/*
       if (
         product.createdBy &&
         product.createdBy.toString() !== req.user.id &&
@@ -63,7 +65,7 @@ import {
         throw new UnauthorizedException(
           'You can only delete your own products',
         );
-      }
+      }*/
       return this.productsService.delete(id);
     }
   

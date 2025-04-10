@@ -21,10 +21,12 @@ export class CategoriesService {
         return category;
     }
 
-    async create(createCategoryDto: CreateCategoryDto, userId: string): Promise<Category> {
+    async create(createCategoryDto: CreateCategoryDto, file: Express.Multer.File): Promise<Category> {
+        const image = file ? file.path : null;
+
         const newCategory = new this.categoryModel({
           ...createCategoryDto,
-          createdBy: userId,
+          image
         });
         return newCategory.save();
     }

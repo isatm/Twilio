@@ -16,17 +16,10 @@ export class Product{
     price: string;
 
     @Prop({required:true})
-    isActive: string;
-
-    @Prop({required:true})
-    role: string;
+    isActive: boolean;
 
     @Prop({type: mongooseSchema.Types.ObjectId, ref: Category.name, required: true })
     category: string;
-
-    @Prop({type: mongooseSchema.Types.ObjectId, ref:'User'})
-    createdBy: string;
-
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

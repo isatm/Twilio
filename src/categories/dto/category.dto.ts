@@ -13,11 +13,7 @@ export class CreateCategoryDto {
   @IsNotEmpty()
   @IsString()
   description: string;
-
-  @IsNotEmpty()
-  @IsString()
-  image: string;
-
+  
   @IsOptional()
   @IsBoolean()
   isArchive: boolean;
